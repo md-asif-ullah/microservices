@@ -3,12 +3,8 @@ import { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import morgan from "morgan";
-import {
-  createInventory,
-  getInventoryById,
-  getInventoryDetails,
-  updateInventory,
-} from "./controller";
+
+import { createProduct, getProductDetails, getProducts } from "./controller";
 
 dotenv.config();
 
@@ -20,15 +16,14 @@ app.use(cors());
 app.use(morgan("dev"));
 
 app.get("/", (req, res) => {
-  res.send("Hello from inventory service");
+  res.send("Hello from product service");
 });
 
 // create routes
 
-app.post("/inventory", createInventory as any);
-app.put("/inventory/:id", updateInventory as any);
-app.get("/inventory/:id", getInventoryById as any);
-app.get("/inventory/:id/details", getInventoryDetails as any);
+app.post("/product", createProduct as any);
+app.get("/products", getProducts as any);
+app.get("/products/:id", getProductDetails as any);
 
 // 404 handler
 app.use((req, res, next) => {
@@ -38,11 +33,11 @@ app.use((req, res, next) => {
 // handel error
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
-  res.status(500).send("Something broke!");
+  res.status(500).send("internal server error");
 });
 
-const PORT = process.env.PORT || 3001;
-const SERVICE_NAME = process.env.SERVICE_NAME || "inventory";
+const PORT = process.env.PORT || 3002;
+const SERVICE_NAME = process.env.SERVICE_NAME || "product-service";
 app.listen(PORT, () => {
   console.log(`${SERVICE_NAME} running http://localhost:${PORT}`);
 });

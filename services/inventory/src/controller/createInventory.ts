@@ -8,10 +8,17 @@ const createInventory = async (
   next: NextFunction
 ) => {
   try {
-    console.log("inventory data", req.body);
     const parsedBody = InventoryCreateSchema.safeParse(req.body);
     if (!parsedBody.success) {
       return res.status(400).json({ error: parsedBody.error.errors });
+    }
+
+    const existingInventory = await prisma.inventory.findUnique({
+      where: { sku: parsedBody.data.sku },
+    });
+
+    if (existingInventory) {
+      return res.status(409).json({ error: "SKU already exists." });
     }
 
     const inventory = await prisma.inventory.create({
