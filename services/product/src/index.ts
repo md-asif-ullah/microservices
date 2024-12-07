@@ -21,7 +21,7 @@ app.get("/", (req, res) => {
 
 // create routes
 
-app.post("/product", createProduct as any);
+app.post("/products", createProduct as any);
 app.get("/products", getProducts as any);
 app.get("/products/:id", getProductDetails as any);
 
