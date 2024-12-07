@@ -23,6 +23,20 @@ app.get("/", (req, res) => {
   res.send("Hello from inventory service");
 });
 
+// allow only specific origin
+
+app.use((req, res, next) => {
+  const allowedOrigins = ["http://localhost:8000"];
+  const origin = req.headers.origin;
+
+  if (allowedOrigins.includes(origin as string)) {
+    res.setHeader("Access-Control-Allow-Origin", origin!);
+    next();
+  } else {
+    res.status(403).send({ message: "Forbidden" });
+  }
+});
+
 // create routes
 
 app.post("/inventory", createInventory as any);
