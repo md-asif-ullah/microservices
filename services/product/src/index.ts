@@ -12,25 +12,23 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+
+const allowedOrigins = ["http://localhost:8000"];
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+  })
+);
 app.use(morgan("dev"));
 
 app.get("/", (req, res) => {
   res.send("Hello from product service");
-});
-
-// allow only specific origin
-
-app.use((req, res, next) => {
-  const allowedOrigins = ["http://localhost:8000"];
-  const origin = req.headers.origin;
-
-  if (allowedOrigins.includes(origin as string)) {
-    res.setHeader("Access-Control-Allow-Origin", origin!);
-    next();
-  } else {
-    res.status(403).send({ message: "Forbidden" });
-  }
 });
 
 // create routes
