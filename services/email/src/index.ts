@@ -3,8 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import morgan from "morgan";
-import { userLogin, userRegistration } from "./controllers";
-import VerifyAccessToken from "./controllers/verifyAccessToken";
+import { getEmail, sendEmail } from "./controllers";
 
 dotenv.config();
 
@@ -20,9 +19,9 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 // create routes
-app.post("/auth/register", userRegistration as any);
-app.post("/auth/login", userLogin as any);
-app.post("/auth/verify", VerifyAccessToken as any);
+
+app.post("/email/send", sendEmail as any);
+app.get("/email", getEmail as any);
 
 // 404 handler
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -36,7 +35,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 const PORT = process.env.PORT || 3003;
-const SERVICE_NAME = process.env.SERVICE_NAME || "auth";
+const SERVICE_NAME = process.env.SERVICE_NAME || "email-service";
 app.listen(PORT, () => {
   console.log(`${SERVICE_NAME} running http://localhost:${PORT}`);
 });
