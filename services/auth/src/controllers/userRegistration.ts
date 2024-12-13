@@ -26,7 +26,7 @@ const userRegistration = async (
 
     const existionUser = await prisma.user.findUnique({
       where: {
-        email: req.body.email,
+        email: parseBody.data.email,
       },
     });
 
@@ -39,7 +39,8 @@ const userRegistration = async (
 
     const newUser = await prisma.user.create({
       data: {
-        ...parseBody.data,
+        name: parseBody.data.name,
+        email: parseBody.data.email,
         password: hashPassword,
       },
       select: {

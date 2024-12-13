@@ -25,7 +25,7 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
 
     res.status(201).json(user);
   } catch (error) {
-    res.status(500).send(error);
+    next(error);
   }
 };
 

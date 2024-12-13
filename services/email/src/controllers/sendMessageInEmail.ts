@@ -1,9 +1,13 @@
 import { transporter } from "@/config";
 import prisma from "@/prisma";
 import { EmailCreateSchema } from "@/schemas";
-import { Request, Response, NextFunction, text } from "express";
+import { Request, Response, NextFunction } from "express";
 
-const sendEmail = async (req: Request, res: Response, next: NextFunction) => {
+const sendMessageInEmail = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const parsedBody = EmailCreateSchema.safeParse(req.body);
 
@@ -15,18 +19,16 @@ const sendEmail = async (req: Request, res: Response, next: NextFunction) => {
 
     const form =
       sender || process.env.DEFAULT_SENDER_EMAIL || "admin@example.com";
-    const emailOptions = {
-      form,
+
+    const info = await transporter.sendMail({
+      from: form,
       to: recipient,
-      subject,
+      subject: subject,
       text: body,
-    };
+    });
 
-    const { rejected } = await transporter.sendMail(emailOptions);
-
-    if (rejected.length) {
-      console.log("Failed to send email", rejected);
-      return res.status(500).send("Failed to send email");
+    if (!info.messageId) {
+      return res.status(400).send("Failed to send email");
     }
 
     await prisma.email.create({
@@ -39,10 +41,10 @@ const sendEmail = async (req: Request, res: Response, next: NextFunction) => {
       },
     });
 
-    res.status(200).send("Email sent successfully");
+    return res.status(200).send("Email sent successfully");
   } catch (error) {
-    res.status(500).send("Failed to send email");
+    next(error);
   }
 };
 
-export default sendEmail;
+export default sendMessageInEmail;

@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import morgan from "morgan";
-import { getEmail, sendEmail } from "./controllers";
+import { getEmail, sendMessageInEmail } from "./controllers";
 
 dotenv.config();
 
@@ -20,7 +20,7 @@ app.get("/", (req: Request, res: Response) => {
 
 // create routes
 
-app.post("/email/send", sendEmail as any);
+app.post("/email/send", sendMessageInEmail as any);
 app.get("/email", getEmail as any);
 
 // 404 handler
