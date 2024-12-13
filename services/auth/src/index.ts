@@ -27,7 +27,7 @@ app.get("/", (req: Request, res: Response) => {
 app.post("/auth/register", userRegistration as any);
 app.post("/auth/login", userLogin as any);
 app.post("/auth/verify", verifyAccessToken as any);
-app.get("/auth/verify-email", verifyEmail as any);
+app.post("/auth/verify-email", verifyEmail as any);
 
 // 404 handler
 app.use((req: Request, res: Response, next: NextFunction) => {
