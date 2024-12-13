@@ -3,8 +3,12 @@ import { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import morgan from "morgan";
-import { userLogin, userRegistration } from "./controllers";
-import VerifyAccessToken from "./controllers/verifyAccessToken";
+import {
+  userLogin,
+  userRegistration,
+  verifyAccessToken,
+  verifyEmail,
+} from "./controllers";
 
 dotenv.config();
 
@@ -16,13 +20,14 @@ app.use(cors());
 app.use(morgan("dev"));
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("Hello from inventory service");
+  res.send("Hello from auth service");
 });
 
 // create routes
 app.post("/auth/register", userRegistration as any);
 app.post("/auth/login", userLogin as any);
-app.post("/auth/verify", VerifyAccessToken as any);
+app.post("/auth/verify", verifyAccessToken as any);
+app.get("/auth/verify-email", verifyEmail as any);
 
 // 404 handler
 app.use((req: Request, res: Response, next: NextFunction) => {

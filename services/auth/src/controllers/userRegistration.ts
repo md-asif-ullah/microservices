@@ -1,8 +1,16 @@
-import e, { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
 import prisma from "../prisma";
 import { userSchema } from "../schemas";
 import bcrypt from "bcryptjs";
 import axios from "axios";
+
+const genarateVerificationCode = () => {
+  const timeStamp = new Date().getTime().toString();
+
+  const randomNum = Math.floor(100000 + Math.random() * 900000).toString();
+
+  return (timeStamp + randomNum).slice(-5);
+};
 
 const userRegistration = async (
   req: Request,
@@ -54,10 +62,27 @@ const userRegistration = async (
       name: newUser.name,
     });
 
-    // TODO: genarate verification code
-    // TODO: send email to user
+    const verificationCode = genarateVerificationCode();
 
-    return res.status(201).json(newUser);
+    await prisma.verification.create({
+      data: {
+        verificationCode,
+        userId: newUser.id,
+        expiresAt: new Date(Date.now() + 1000 * 60 * 5),
+      },
+    });
+
+    await axios.post(`${process.env.EMAIL_SERVICE_URL}/email/send`, {
+      recipient: newUser.email,
+      subject: "Email Verification",
+      body: `Your verification code is ${verificationCode}`,
+      source: "user-registration",
+    });
+
+    return res.status(201).json({
+      message: "User created successfully",
+      data: newUser,
+    });
   } catch (error) {
     next(error);
   }
