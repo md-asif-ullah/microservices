@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import prisma from "../prisma";
 import { accessTokenSchema } from "../schemas";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 async function VerifyAccessToken(
   req: Request,
@@ -14,9 +15,29 @@ async function VerifyAccessToken(
       return res.status(400).json({ error: parsebody.error.errors });
     }
 
+    const accessToken = parsebody.data.accessToken;
+
+    if (!accessToken || accessToken.split(".").length !== 3) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    // verify token
+
+    let decoded: JwtPayload | string;
+
+    try {
+      decoded = jwt.verify(accessToken, process.env.JWT_SECRET || "secret");
+    } catch (error) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    if (typeof decoded !== "object" || !decoded) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
     const user = await prisma.user.findUnique({
       where: {
-        email: parsebody.data.accessToken,
+        email: decoded.email,
       },
       select: {
         id: true,

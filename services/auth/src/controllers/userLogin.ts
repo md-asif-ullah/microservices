@@ -113,9 +113,7 @@ const userLogin = async (req: Request, res: Response, next: NextFunction) => {
       attempt: "SUCCESS",
     });
 
-    return res
-      .status(200)
-      .json({ message: "login success", data: accessToken });
+    return res.status(200).json({ accessToken });
   } catch (error) {
     next(error);
   }
