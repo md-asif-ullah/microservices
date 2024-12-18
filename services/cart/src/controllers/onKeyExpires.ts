@@ -15,9 +15,10 @@ redis.subscribe(CHANNEL_KEY);
 
 redis.on("message", async (channel: string, message: string) => {
   if (channel === CHANNEL_KEY) {
-    console.log("key expired", message);
+    const cartId = message.split(":")[1];
 
-    const userId = message.split(":")[1];
-    await ClearCartInRedis(userId);
+    if (!cartId) return;
+
+    await ClearCartInRedis(cartId);
   }
 });

@@ -1,9 +1,9 @@
 import redis from "@/redis";
 import axios from "axios";
 
-const ClearCartInRedis = async (userId: string) => {
+const ClearCartInRedis = async (cartID: string) => {
   try {
-    const data = await redis.hgetall(`cart:${userId}`);
+    const data = await redis.hgetall(`cart:${cartID}`);
 
     if (Object.keys(data).length === 0) {
       return;
@@ -40,7 +40,7 @@ const ClearCartInRedis = async (userId: string) => {
 
     // Clear cart in redis
 
-    await redis.del(`cart:${userId}`);
+    await redis.del(`cart:${cartID}`);
   } catch (error) {
     console.error("Error in ClearCartInRedis", error);
   }

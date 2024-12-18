@@ -19,7 +19,8 @@ const addToCart = async (req: Request, res: Response, next: NextFunction) => {
       const exist = await redis.exists(`session:${cartSessionId}`);
 
       if (!exist) {
-        cartSessionId = null;
+        delete req.headers["x-cart-session-id"];
+        return res.status(400).json({ message: "cart is empty" });
       }
     }
 
