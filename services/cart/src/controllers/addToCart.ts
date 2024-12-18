@@ -15,11 +15,8 @@ const addToCart = async (req: Request, res: Response, next: NextFunction) => {
 
     let cartSessionId = (req.headers["x-cart-session-id"] as string) || null;
 
-    console.log("cartSessionId", cartSessionId);
-
     if (cartSessionId) {
       const exist = await redis.exists(`session:${cartSessionId}`);
-      console.log("session-exist", exist);
 
       if (!exist) {
         cartSessionId = null;
@@ -43,8 +40,6 @@ const addToCart = async (req: Request, res: Response, next: NextFunction) => {
     const { data } = await axios.get(
       `${process.env.INVENTORY_SERVICE_URL}/inventory/${parseBody.data.inventoryId}`
     );
-
-    console.log("inventory-data", data);
 
     if (Number(data.quantity) < parseBody.data.quantity) {
       return res.status(400).json({
