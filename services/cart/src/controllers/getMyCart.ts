@@ -21,7 +21,13 @@ const getMyCart = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     const cartItems = Object.keys(items).map((key) => {
-      return JSON.parse(items[key]);
+      const item = JSON.parse(items[key]);
+
+      return {
+        productId: key,
+        inventoryId: item.inventoryId,
+        quantity: item.quantity,
+      };
     });
 
     return res.status(200).json({

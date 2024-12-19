@@ -4,8 +4,9 @@ import dotenv from "dotenv";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import morgan from "morgan";
-import { addToCart, getMyCart } from "./controllers";
+import { addToCart, clearCart, getMyCart } from "./controllers";
 import "@/controllers/onKeyExpires";
+import cors from "cors";
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ const app = express();
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(helmet());
+app.use(cors());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -36,6 +38,7 @@ app.get("/", (req: Request, res: Response) => {
 
 app.post("/cart/add-to-cart", addToCart as any);
 app.get("/cart/my-cart", getMyCart as any);
+app.delete("/cart/clear-cart", clearCart as any);
 
 // 404 handler
 app.use((req: Request, res: Response, next: NextFunction) => {
