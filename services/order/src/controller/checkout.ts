@@ -1,4 +1,5 @@
 import prisma from "@/prisma";
+import sendToQueue from "@/queue";
 import { CartItemSchema, OrderSchema, productSchema } from "@/schemas";
 import axios, { AxiosError } from "axios";
 import { Request, Response, NextFunction } from "express";
@@ -110,6 +111,14 @@ const checkout = async (req: Request, res: Response, next: NextFunction) => {
       body: `Your order has been placed successfully. Order ID: ${order.id}`,
       source: "order confirmation",
     });
+
+    // send to queue
+
+    await sendToQueue("send-email", JSON.stringify(order));
+    await sendToQueue(
+      "clear-cart",
+      JSON.stringify({ cartSessionId: parsedBody.data.cartSessionId })
+    );
 
     // Respond with success message
     return res.status(200).json({
